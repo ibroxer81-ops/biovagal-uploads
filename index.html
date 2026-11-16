@@ -39,14 +39,14 @@ main{max-width:640px;margin:0 auto;padding:14px 14px 80px}
 .empty{text-align:center;color:var(--muted);padding:40px 10px}
 #sentinel{height:40px}
 .fab{position:fixed;right:16px;bottom:18px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 20px;font:700 15px Inter,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.2);cursor:pointer}
-.appbtn{display:inline-block;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font:700 14px Inter,sans-serif}
+.appbtn{display:inline-block;text-decoration:none;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font:700 14px Inter,sans-serif}
 .banner{display:block;text-align:center;background:var(--ink);color:var(--bg);font:600 13px Inter,sans-serif;padding:8px;text-decoration:none}
 .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
 </style>
 </head>
 <body>
-<div class="banner" id="banner">Unlimited puns in the Punsnup app &middot; coming soon to Google Play</div>
+<a class="banner" id="banner" href="https://buy.stripe.com/test_aFa9AU5wC4iGgUd8CdgEg00">Unlock unlimited puns &middot; one-off &pound;2.99</a>
 <header>
   <h1>PUNS<span>NUP</span></h1>
   <p class="sub">The infinite pun generator. Reads the same both ways, groans the same every way.</p>
@@ -262,11 +262,14 @@ function card(g){
   };
   return d;
 }
-const FULL=!!window.PUNSNUP_FULL,LIMIT=25,today=new Date().toDateString();
+const PAY="https://buy.stripe.com/test_aFa9AU5wC4iGgUd8CdgEg00";
+(function(){try{const q=new URLSearchParams(location.search).get("paid");if(q&&/^cs_/.test(q)){localStorage.setItem("punPaid",q);history.replaceState(null,"",location.pathname);setTimeout(()=>toast("Unlocked. Unlimited puns!"),300)}}catch(e){}})();
+let PAID=false;try{PAID=!!localStorage.getItem("punPaid")}catch(e){}
+const FULL=!!window.PUNSNUP_FULL||PAID,LIMIT=25,today=new Date().toDateString();
 let used=0;try{const u=JSON.parse(localStorage.getItem("punUse")||"{}");used=u.d===today?u.n:0}catch(e){}
 function bump(){used++;try{localStorage.setItem("punUse",JSON.stringify({d:today,n:used}))}catch(e){}}
 function wall(){if(document.getElementById("wall"))return;const d=document.createElement("div");d.className="card";d.id="wall";
-d.innerHTML='<div class="pun">That\u2019s today\u2019s free puns used up.</div><p class="frame" style="margin-top:8px">Get unlimited puns, puns on any word you type, and no limits in the Punsnup app.</p><div class="row"><span class="appbtn">Coming soon to Google Play</span></div>';feed.appendChild(d)}
+d.innerHTML='<div class="pun">That\u2019s today\u2019s free puns used up.</div><p class="frame" style="margin-top:8px">Unlock unlimited puns for a one-off \u00a32.99. No subscription.</p><div class="row"><a class="appbtn" href="'+PAY+'">Unlock unlimited \u00b7 \u00a32.99</a></div>';feed.appendChild(d)}
 function more(n=8){if(mode==="favs")return;for(let i=0;i<n;i++){if(!FULL&&used>=LIMIT){wall();break}feed.appendChild(card(next()));made++;if(!FULL)bump()}countEl.textContent=FULL?made+" puns served":Math.max(0,LIMIT-used)+" free puns left today"}
 function render(){
   feed.innerHTML="";made=0;
@@ -293,6 +296,7 @@ function runQuery(){
 document.getElementById("qf").onsubmit=e=>{e.preventDefault();qIn.blur();runQuery()};
 clr.onclick=()=>{qIn.value="";runQuery()};
 qIn.oninput=()=>{clr.style.display=qIn.value?"block":"none"};
+if(PAID){const b=document.getElementById("banner");if(b)b.remove()}
 render();
 </script>
 </body>
