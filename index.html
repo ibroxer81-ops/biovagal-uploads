@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="description" content="Punsnup is the infinite pun generator. Type any word and get endless puns for captions, cards and group chats. Free to try.">
+<link rel="canonical" href="https://punsnup.com/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Punsnup · Infinite Pun Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,6 +63,7 @@ main{max-width:640px;margin:0 auto;padding:14px 14px 80px}
   </div>
 </header>
 <main id="feed"></main>
+<p style="text-align:center;font-size:13px;margin:0 0 90px"><a href="/puns/" style="color:var(--muted)">Browse puns by topic</a></p>
 <div id="sentinel"></div>
 <button class="fab" id="top">↑ Fresh puns</button>
 <div class="toast" id="toast"></div>
@@ -297,7 +300,7 @@ document.getElementById("qf").onsubmit=e=>{e.preventDefault();qIn.blur();runQuer
 clr.onclick=()=>{qIn.value="";runQuery()};
 qIn.oninput=()=>{clr.style.display=qIn.value?"block":"none"};
 if(PAID){const b=document.getElementById("banner");if(b)b.remove()}
-render();
+try{const q0=new URLSearchParams(location.search).get("q");if(q0){qIn.value=q0.slice(0,40);runQuery()}else render()}catch(e){render()}
 </script>
 </body>
 </html>
