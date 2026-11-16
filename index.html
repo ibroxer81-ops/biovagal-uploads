@@ -8,6 +8,7 @@
 <link rel="icon" href="/app/icon-192.png">
 <link rel="apple-touch-icon" href="/app/icon-512.png">
 <title>Punsnup · Infinite Pun Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -47,12 +48,14 @@ main{max-width:640px;margin:0 auto;padding:14px 14px 80px}
 .banner{display:block;text-align:center;background:var(--ink);color:var(--bg);font:600 13px Inter,sans-serif;padding:8px;text-decoration:none}
 .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+.plogo{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none}.pinf{width:54px;overflow:visible}.pword{font-family:'Luckiest Guy',cursive;font-size:44px;line-height:1;padding-top:.08em;white-space:nowrap}.ps{display:inline-block;margin:0 .02em;color:#f6efe2;text-shadow:0 .04em 0 #1f1a17,.04em 0 0 #1f1a17,0 -.04em 0 #1f1a17,-.04em 0 0 #1f1a17,.03em .03em 0 #1f1a17,-.03em -.03em 0 #1f1a17,.03em -.03em 0 #1f1a17,-.03em .03em 0 #1f1a17,.06em .06em 0 #1f1a17}.ps.s{color:#1f1a17;text-shadow:0 .04em 0 #f6efe2,.04em 0 0 #f6efe2,0 -.04em 0 #f6efe2,-.04em 0 0 #f6efe2,.03em .03em 0 #f6efe2,-.03em -.03em 0 #f6efe2,.03em -.03em 0 #f6efe2,-.03em .03em 0 #f6efe2,.06em .06em 0 #1f1a17}.pe{display:inline-block;font-size:.6em;margin-left:.08em;transform:translateY(-.25em) rotate(12deg)}.pdaily{font-family:'Luckiest Guy',cursive;font-size:17px;letter-spacing:.12em;color:#1f1a17}
+header{background:#e2632a!important;border-bottom:0!important}header .sub{color:#1f1a17;text-align:center}header .search{margin-top:8px}header .search button[type=submit]{background:#1f1a17}header .count{color:#1f1a17}header .tabs button.on{background:#1f1a17}
 </style>
 </head>
 <body>
 <a class="banner" id="banner" href="https://buy.stripe.com/00w5kF5YM1tta5XcWp0Ny01">Go unlimited: any word, no daily limit &middot; &pound;2.99/month &rarr;</a>
 <header>
-  <h1>PUN<span>S</span>NUP</h1>
+  <a class="plogo" href="/" aria-label="Punsnup home"><svg class="pinf" viewBox="0 0 130 66" aria-hidden="true"><path d="M16 33 C16 9 50 9 66 33 C82 57 116 57 116 33 C116 9 82 9 66 33 C50 57 16 57 16 33 Z" fill="none" stroke="#f6efe2" stroke-width="19" stroke-linejoin="round"/><path d="M16 33 C16 9 50 9 66 33 C82 57 116 57 116 33 C116 9 82 9 66 33 C50 57 16 57 16 33 Z" fill="none" stroke="#1f1a17" stroke-width="11" stroke-linejoin="round"/></svg><span class="pword"><span class="ps" style="transform:translateY(0.038em) rotate(-8deg)">P</span><span class="ps" style="transform:translateY(-0.054em) rotate(5deg)">U</span><span class="ps" style="transform:translateY(0.023em) rotate(-4deg)">N</span><span class="ps s" style="transform:translateY(-0.023em) rotate(0deg)">S</span><span class="ps" style="transform:translateY(0.023em) rotate(4deg)">N</span><span class="ps" style="transform:translateY(-0.054em) rotate(-5deg)">U</span><span class="ps" style="transform:translateY(0.038em) rotate(8deg)">P</span><span class="pe" aria-hidden="true">🤣</span></span><span class="pdaily">PUN DAILY</span></a>
   <p class="sub">The infinite pun generator. Reads the same both ways, groans the same every way.</p>
   <form id="qf" class="search"><input id="q" type="text" placeholder="Type any word… cat, cheese, Billy, gym" autocomplete="off" enterkeyhint="go"><button type="button" id="clr" aria-label="Clear">×</button><button type="submit">Pun it</button></form>
   <div class="hint" id="hint"></div>
