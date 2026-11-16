@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Biovagal Breathing App · Slow breathing with chakra bowl tones</title>
+<meta name="description" content="Biovagal's slow-breathing timer: breathe in through your nose, out through your mouth, to a soft bowl tone. Free 10-minute sessions; members unlock all seven chakra tones, longer sessions and the theta binaural layer.">
+<link rel="canonical" href="https://biovagal.co.uk/">
+<meta property="og:title" content="Biovagal Breathing App">
+<meta property="og:description" content="Slow breathing with chakra bowl tones. Free to try.">
+<meta property="og:url" content="https://biovagal.co.uk/">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f4f3f8; --surface:#ffffff; --line:#d9d6e6; --fg:#1a1830; --muted:#5d5a78;
+  --accent:#6a45e0; --accent-2:#b07a10; --orb-a:#8a63ff; --orb-b:#f0b84a;
+  --font-display:'Sora','Helvetica Neue',Arial,sans-serif;
+  --font-body:'Figtree','Helvetica Neue',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0a0c1a; --surface:#12152a; --line:#262a4a; --fg:#e9e8f3; --muted:#9a98b8;
+  --accent:#b9a4ff; --accent-2:#e8c46b; --orb-a:#9b7bff; --orb-b:#f0c35c; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 var(--font-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+[hidden]{display:none!important}
+main{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+h1{font:700 22px/1.1 var(--font-display);letter-spacing:.02em;margin:0}
+.tag{font:400 12px var(--font-mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.stage{display:grid;place-items:center;padding:8px 0 0;min-width:0}
+.orbwrap{position:relative;width:min(78vw,340px);aspect-ratio:1;display:grid;place-items:center;max-width:100%}
+.orb{position:absolute;inset:0;margin:auto;width:46%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,var(--orb-b),var(--orb-a) 62%,transparent 72%);
+  box-shadow:0 0 60px 8px color-mix(in srgb,var(--orb-a) 45%,transparent);transform:scale(.6);will-change:transform}
+.ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--line)}
+.ring.r2{inset:8%;border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.cue{position:relative;text-align:center;font:600 24px/1.1 var(--font-display);pointer-events:none}
+.cue small{display:block;font:500 15px var(--font-mono);color:var(--muted);margin-top:6px;letter-spacing:.04em}
+.clock{font:500 38px var(--font-mono);text-align:center;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+button,.chip{font:600 15px var(--font-body);border:1px solid var(--line);background:var(--surface);color:var(--fg);
+  padding:11px 16px;border-radius:999px;cursor:pointer;min-height:44px}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chip[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.go{background:var(--accent);color:var(--bg);border-color:var(--accent);padding:14px 38px;font-size:17px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel h2{font:600 13px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+label.sw{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+label.sw input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);flex:none}
+.hint{color:var(--muted);font-size:14px;margin:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{text-align:center;font:400 12px var(--font-mono);color:var(--muted)}
+.day i{display:block;height:28px;border-radius:8px;border:1px solid var(--line);margin-bottom:4px}
+.day.on i{background:var(--accent);border-color:var(--accent)}
+.day.today{color:var(--fg)}
+.links{display:flex;flex-wrap:wrap;gap:10px}
+a{color:var(--accent)}
+.links a{font-weight:600}
+footer p{color:var(--muted);font-size:13px;margin:0 0 6px}
+.chip.locked{opacity:.55;border-style:dashed}
+.chip.locked::after{content:" · Members";font:400 11px var(--font-mono);color:var(--muted)}
+.plan{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.badge{font:500 12px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.badge.on{border-color:var(--accent);color:var(--accent)}
+ul.perks{margin:0;padding-left:18px;color:var(--fg);font-size:15px}
+ul.perks li{margin:3px 0}
+.buy{display:flex;flex-direction:column;gap:10px}
+.buy a{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:12px 16px;min-height:52px;background:var(--bg)}
+.buy a.best{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.buy b{font:700 20px var(--font-display)}
+.buy span{font:500 13px var(--font-mono);color:var(--muted)}
+.msg{font-size:14px;min-height:1.2em;margin:0}
+.msg.err{color:#b3261e}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.dim{position:fixed;inset:0;background:#000;opacity:0;transition:opacity 4s;pointer-events:none;z-index:5}.dim.on{opacity:.92;pointer-events:auto}
+.legal{text-align:center;font-size:12px;color:var(--muted);margin:0}
+.legal a{color:var(--muted)}
+@media (prefers-color-scheme: dark){.msg.err{color:#ff8a80}}
+@media (prefers-reduced-motion:reduce){.orb{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Biovagal Breathing App</h1>
+    <span class="tag">Slow-breathing timer</span>
+  </header>
+
+  <section class="stage" aria-label="Breathing guide">
+    <div class="orbwrap">
+      <div class="ring"></div><div class="ring r2"></div>
+      <div class="orb" id="orb"></div>
+      <div class="cue" id="cue">Ready<small id="count">nose in 5 · mouth out 5</small></div>
+    </div>
+  </section>
+
+  <p class="hint" style="text-align:center;margin:-8px 0 0">Breathe in through your nose for 5, out through your mouth for 5, following the circle and a soft bowl tone. Pick a length and press Begin.</p>
+  <div class="clock" id="clock" aria-live="off">10:00</div>
+
+  <div class="row" id="lengths" role="group" aria-label="Session length">
+    <button class="chip" data-min="10" aria-pressed="true">10 min</button>
+    <button class="chip" data-min="20" aria-pressed="false">20 min</button>
+    <button class="chip" data-min="30" aria-pressed="false">30 min</button>
+  </div>
+  <div class="row" id="sleepRow" role="group" aria-label="Sleep sessions">
+    <button class="chip" data-min="60" aria-pressed="false">1 hr sleep</button>
+    <button class="chip" data-min="180" aria-pressed="false">3 hr sleep</button>
+    <button class="chip" data-min="420" aria-pressed="false">7 hr sleep</button>
+  </div>
+  <p class="hint" id="sleepNote" hidden style="text-align:center">Sleep sessions: the breathing guide fades after 10 minutes, the bowls slow to once a minute and soften, and the screen dims (tap to wake it). Keep the phone plugged in and this page open. Some phones pause sound when the screen locks; if that happens, use the 7-hour videos on YouTube below.</p>
+  <div class="row"><button class="go" id="go">Begin</button></div>
+
+  <section class="panel">
+    <h2>Bowl tone</h2>
+    <div class="row" id="tones" role="group" aria-label="Bowl tone"></div>
+    <p class="hint">A soft synthesised bowl sounds every 20 seconds, and three together at the end. Each tone is traditionally associated with one of the seven chakras.</p>
+    <label class="sw" for="bin">
+      <input type="checkbox" id="bin">
+      <span><strong>Theta binaural layer</strong> <span class="badge" id="binBadge">Members</span><br><span class="hint">Headphones required. A quiet tone sits under the bowls, slightly different in each ear.</span></span>
+    </label>
+    <label for="vol" class="hint">Volume</label>
+    <input type="range" id="vol" min="0" max="100" value="45">
+  </section>
+
+  <section class="panel">
+    <h2>This week</h2>
+    <p class="hint" id="stats" hidden></p>
+    <div class="week" id="week"></div>
+    <p class="hint" id="weekNote">Practise 30 minutes a day for 3 weeks. Marks appear here after you finish a session on this device.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Biovagal videos</h2>
+    <div class="links" style="flex-direction:column;gap:8px">
+      <a href="https://www.youtube.com/@biovagal/videos" rel="noopener">The 7-chakra series (30 minutes each)</a>
+      <a href="https://www.youtube.com/@biovagal/search?query=7%20hour" rel="noopener">7-hour sleep versions</a>
+      <a href="https://www.youtube.com/@biovagal/search?query=integration" rel="noopener">Root to Integration: all seven chakras</a>
+      <a href="https://www.youtube.com/@biovagal/shorts" rel="noopener">Shorts</a>
+    </div>
+    <p class="hint">Headphones required for the binaural layer in every video.</p>
+  </section>
+
+  <section class="panel" id="plan">
+    <div class="plan"><h2>Your plan</h2><span class="badge" id="planBadge">Free</span></div>
+    <div id="freeBox">
+      <ul class="perks">
+        <li>20 and 30 minute sessions</li>
+        <li>All seven chakra bowl tones</li>
+        <li>Quiet theta binaural layer (headphones required)</li>
+        <li>1, 3 and 7 hour sleep sessions</li>
+        <li>Your streak, days practised and total minutes</li>
+        <li>Printable 21-day practice tracker</li>
+      </ul>
+      <div class="buy">
+        <a id="buyLife" class="best" href="#" rel="noopener"><span><b>£19.99</b> once</span><span>Lifetime</span></a>
+        <a id="buyMonth" href="#" rel="noopener"><span><b>£2.99</b> / month</span><span>Cancel any time</span></a>
+      </div>
+      <p class="hint">Secure checkout by Stripe. Members unlock straight away on the device you pay on.</p>
+    </div>
+    <div id="memberBox" hidden>
+      <p class="hint">Member features are unlocked on this device. Thank you for supporting Biovagal.</p>
+      <p class="hint"><a href="/tracker/">Printable 21-day practice tracker</a></p>
+      <p class="hint">Monthly member? <a href="https://billing.stripe.com/p/login/00w5kF3QE9ZZdi97C50Ny00" rel="noopener">Manage or cancel</a>.</p>
+    </div>
+    <p class="msg" id="codeMsg" role="status"></p>
+  </section>
+
+  <footer>
+    <div class="links">
+      <a href="https://www.youtube.com/@biovagal" rel="noopener">Biovagal on YouTube</a>
+    </div>
+    <p style="margin-top:14px">Breathe slowly and comfortably. Never hold your breath or breathe fast. If anything feels uncomfortable, stop and breathe normally. For relaxation only. Not medical advice. Do not use while driving.</p>
+    <p class="legal">&copy; 2026 Biovagal. All rights reserved. &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></p>
+  </footer>
+</main>
+<div class="toast" id="toast"></div>
+<div class="dim" id="dim" aria-hidden="true"></div>
+
+<script>
+(function(){
+  /* Checkout links. After payment Stripe returns to https://biovagal.co.uk/?paid={CHECKOUT_SESSION_ID} */
+  var CONFIG={monthUrl:'https://buy.stripe.com/fZu7sN4UIegfce5e0t0Ny04',lifeUrl:'https://buy.stripe.com/14A7sNfzmgon0vn3lP0Ny05'};
+  var TONES=[['396','Root'],['417','Sacral'],['528','Solar Plexus'],['639','Heart'],['741','Throat'],['852','Third Eye'],['963','Crown']];
+  var state={min:10,tone:396,running:false,t0:0,lastBowl:-1,ctx:null,master:null,bin:null,wake:null,raf:0};
+  var $=function(id){return document.getElementById(id)};
+  var FREE_TONE=396;
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+  function isMember(){var v=store('bv_member');return !!v&&v!=='0'}
+  var tt;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show')},2600)}
+
+  /* unlock after Stripe checkout */
+  try{var q=new URLSearchParams(location.search).get('paid');if(q&&/^cs_/.test(q)){store('bv_member',q);history.replaceState(null,'',location.pathname);setTimeout(function(){toast('Unlocked. Welcome, member!')},300)}}catch(e){}
+
+  var orb=$('orb'),cue=$('cue'),count=$('count'),clock=$('clock'),go=$('go');
+  function fmt(s){s=Math.max(0,Math.round(s));var h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(x).padStart(2,'0')}
+  function setClock(){clock.textContent=fmt(state.min*60)}
+  function msg(t,err){var m=$('codeMsg');m.textContent=t;m.className='msg'+(err?' err':'')}
+  function toPlan(t){msg(t,true);$('plan').scrollIntoView({behavior:'smooth',block:'center'})}
+
+  document.querySelectorAll('#lengths .chip,#sleepRow .chip').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(state.running)return;
+      if(+b.dataset.min>10&&!isMember()){toPlan('Sessions longer than 10 minutes are for members.');return}
+      state.min=+b.dataset.min;
+      document.querySelectorAll('#lengths .chip,#sleepRow .chip').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+      setClock();$('sleepNote').hidden=state.min<60;
+    });
+  });
+
+  var tonesEl=$('tones');
+  TONES.forEach(function(t,i){
+    var b=document.createElement('button');b.className='chip';b.type='button';
+    b.textContent=t[0]+' Hz '+t[1];b.setAttribute('aria-pressed',i===0?'true':'false');b.dataset.hz=t[0];
+    b.addEventListener('click',function(){
+      if(+t[0]!==FREE_TONE&&!isMember()){toPlan('The other six bowl tones are for members.');return}
+      state.tone=+t[0];
+      tonesEl.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+      if(state.ctx&&state.running)bowl(state.tone,1);
+    });
+    tonesEl.appendChild(b);
+  });
+
+  function ensureAudio(){
+    if(state.ctx)return;
+    var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    state.ctx=new AC();
+    state.master=state.ctx.createGain();state.master.gain.value=vol();
+    state.master.connect(state.ctx.destination);
+  }
+  function vol(){var v=+$('vol').value/100;return v*v*0.9}
+  $('vol').addEventListener('input',function(){if(state.master)state.master.gain.setTargetAtTime(vol(),state.ctx.currentTime,.05)});
+  var PART=[[1,1,16],[2.71,.5,9],[5.15,.26,5.5],[8.43,.13,3.2],[12.3,.06,2]];
+  function bowl(f0,gain){
+    var c=state.ctx;if(!c)return;var now=c.currentTime;
+    var out=c.createGain();out.gain.value=.22*(gain||1);out.connect(state.master);
+    PART.forEach(function(p,k){
+      [-1,1].forEach(function(side){
+        var o=c.createOscillator(),g=c.createGain(),pan=c.createStereoPanner?c.createStereoPanner():null;
+        o.type='sine';o.frequency.value=f0*p[0]+side*(0.28+0.17*k);
+        g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(p[1],now+.008);
+        g.gain.setTargetAtTime(0,now+.008,p[2]/3);
+        o.connect(g);
+        if(pan){pan.pan.value=side*.55;g.connect(pan);pan.connect(out)}else g.connect(out);
+        o.start(now);o.stop(now+p[2]*1.6);
+      });
+    });
+  }
+  function startBin(){
+    stopBin();if(!state.ctx||!$('bin').checked)return;
+    var c=state.ctx,L=c.createOscillator(),R=c.createOscillator(),g=c.createGain(),m=c.createChannelMerger(2);
+    L.frequency.value=200;R.frequency.value=206;g.gain.value=0;
+    L.connect(m,0,0);R.connect(m,0,1);m.connect(g);g.connect(state.master);
+    g.gain.setTargetAtTime(.05,c.currentTime,2);
+    L.start();R.start();state.bin={L:L,R:R,g:g};
+  }
+  function stopBin(){
+    var b=state.bin;if(!b)return;state.bin=null;
+    try{b.g.gain.setTargetAtTime(0,state.ctx.currentTime,.6);b.L.stop(state.ctx.currentTime+3);b.R.stop(state.ctx.currentTime+3)}catch(e){}
+  }
+  $('bin').addEventListener('change',function(){if(this.checked&&!isMember()){this.checked=false;toPlan('The binaural layer is for members.');return}if(state.running){if(this.checked)startBin();else stopBin()}});
+
+  function lock(){try{if(navigator.wakeLock)navigator.wakeLock.request('screen').then(function(w){state.wake=w}).catch(function(){})}catch(e){}}
+  function unlock(){try{if(state.wake){state.wake.release();state.wake=null}}catch(e){}}
+
+  function ease(x){return .5-.5*Math.cos(Math.PI*x)}
+  function tick(){
+    if(!state.running)return;
+    var el=(performance.now()-state.t0)/1000,total=state.min*60;
+    if(el>=total){finish();return}
+    var ph=el%10,inh=ph<5,x=inh?ph/5:(10-ph)/5,n=Math.floor(ph%5)+1;
+    orb.style.transform='scale('+(0.6+0.55*ease(x)).toFixed(3)+')';
+    cue.firstChild.nodeValue=inh?'Nose in':'Mouth out';
+    count.textContent=n;
+    clock.textContent=fmt(total-el);
+    var sleep=state.min>=60;
+    if(sleep&&el>600){cue.firstChild.nodeValue='Rest';count.textContent='';orb.style.opacity=Math.max(.15,1-(el-600)/600)}
+    if(sleep&&el>120&&!state.dimmed){state.dimmed=true;$('dim').classList.add('on')}
+    var every=sleep&&el>600?60:20,slot=Math.floor(el/every)+(every===60?100000:0);
+    var soft=sleep?Math.max(.3,1-el/1800):1;
+    if(slot!==state.lastBowl){state.lastBowl=slot;bowl(state.tone,soft)}
+    state.raf=requestAnimationFrame(tick);
+  }
+  function begin(){
+    ensureAudio();if(state.ctx&&state.ctx.state==='suspended')state.ctx.resume();
+    state.running=true;state.t0=performance.now();state.lastBowl=-1;
+    go.textContent='Stop';startBin();lock();tick();
+  }
+  function reset(){
+    cancelAnimationFrame(state.raf);state.running=false;stopBin();unlock();
+    go.textContent='Begin';orb.style.transform='scale(.6)';orb.style.opacity=1;state.dimmed=false;$('dim').classList.remove('on');
+    cue.firstChild.nodeValue='Ready';count.textContent='nose in 5 · mouth out 5';setClock();
+  }
+  function finish(){
+    if(state.ctx){[0,.35,.7].forEach(function(d,i){setTimeout(function(){bowl(state.tone*[1,1.25,1.5][i],1)},d*1000)})}
+    markToday();reset();cue.firstChild.nodeValue='Well done';count.textContent='Session complete';
+  }
+  go.addEventListener('click',function(){state.running?reset():begin()});
+  $('dim').addEventListener('click',function(){this.classList.remove('on');var d=this;setTimeout(function(){if(state.running)d.classList.add('on')},15000)});
+
+  function key(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+  function load(){try{return JSON.parse(store('bv_days')||'{}')}catch(e){return {}}}
+  function markToday(){var o=load();o[key(new Date())]=(o[key(new Date())]||0)+state.min;store('bv_days',JSON.stringify(o));drawWeek()}
+  function drawWeek(){
+    var o=load(),el=$('week'),now=new Date(),dow=(now.getDay()+6)%7,mon=new Date(now);mon.setDate(now.getDate()-dow);
+    var names=['M','T','W','T','F','S','S'];el.innerHTML='';var n=0;
+    for(var i=0;i<7;i++){
+      var d=new Date(mon);d.setDate(mon.getDate()+i);var mins=o[key(d)]||0;if(mins)n++;
+      var cell=document.createElement('div');cell.className='day'+(mins?' on':'')+(i===dow?' today':'');
+      cell.innerHTML='<i></i>'+names[i];cell.title=mins?mins+' min':'No session';el.appendChild(cell);
+    }
+    var st=$('stats');
+    if(isMember()){
+      var keys=Object.keys(o),tot=0,sess=keys.length;keys.forEach(function(k){tot+=o[k]});
+      var streak=0,dd=new Date();if(!o[key(dd)])dd.setDate(dd.getDate()-1);while(o[key(dd)]){streak++;dd.setDate(dd.getDate()-1)}
+      st.hidden=false;st.textContent='Streak: '+streak+' day'+(streak===1?'':'s')+'. Days practised: '+sess+'. Total minutes: '+tot+'.';
+    }else st.hidden=true;
+    if(n)$('weekNote').textContent=n+' of 7 days practised this week. Practise 30 minutes a day for 3 weeks.';
+  }
+
+  function applyPlan(){
+    var m=isMember();
+    $('planBadge').textContent=m?'Member':'Free';$('planBadge').classList.toggle('on',m);
+    $('freeBox').hidden=m;$('memberBox').hidden=!m;$('binBadge').hidden=m;
+    document.querySelectorAll('#lengths .chip,#sleepRow .chip').forEach(function(b){b.classList.toggle('locked',!m&&+b.dataset.min>10)});
+    document.querySelectorAll('#tones .chip').forEach(function(b){b.classList.toggle('locked',!m&&+b.dataset.hz!==FREE_TONE)});
+    var ready=/^https:/.test(CONFIG.monthUrl);
+    $('buyMonth').href=ready?CONFIG.monthUrl:'#';$('buyLife').href=ready?CONFIG.lifeUrl:'#';
+    drawWeek();
+  }
+  ['buyMonth','buyLife'].forEach(function(id){$(id).addEventListener('click',function(e){if(!/^https:/.test(this.getAttribute('href'))){e.preventDefault();msg('Checkout opens soon.',true)}})});
+  setClock();applyPlan();
+  document.addEventListener('visibilitychange',function(){if(state.running&&document.visibilityState==='visible')lock()});
+})();
+</script>
+</body>
+</html>
