@@ -46,7 +46,7 @@ main{max-width:640px;margin:0 auto;padding:14px 14px 80px}
 </style>
 </head>
 <body>
-<a class="banner" id="banner" href="https://buy.stripe.com/test_aFa9AU5wC4iGgUd8CdgEg00">Unlock unlimited puns &middot; one-off &pound;2.99</a>
+<a class="banner" id="banner" href="https://buy.stripe.com/00w5kF5YM1tta5XcWp0Ny01">Go unlimited: any word, no daily limit &middot; &pound;2.99/month &rarr;</a>
 <header>
   <h1>PUNS<span>NUP</span></h1>
   <p class="sub">The infinite pun generator. Reads the same both ways, groans the same every way.</p>
@@ -262,14 +262,14 @@ function card(g){
   };
   return d;
 }
-const PAY="https://buy.stripe.com/test_aFa9AU5wC4iGgUd8CdgEg00";
+const PAY="https://buy.stripe.com/00w5kF5YM1tta5XcWp0Ny01";
 (function(){try{const q=new URLSearchParams(location.search).get("paid");if(q&&/^cs_/.test(q)){localStorage.setItem("punPaid",q);history.replaceState(null,"",location.pathname);setTimeout(()=>toast("Unlocked. Unlimited puns!"),300)}}catch(e){}})();
 let PAID=false;try{PAID=!!localStorage.getItem("punPaid")}catch(e){}
 const FULL=!!window.PUNSNUP_FULL||PAID,LIMIT=25,today=new Date().toDateString();
 let used=0;try{const u=JSON.parse(localStorage.getItem("punUse")||"{}");used=u.d===today?u.n:0}catch(e){}
 function bump(){used++;try{localStorage.setItem("punUse",JSON.stringify({d:today,n:used}))}catch(e){}}
 function wall(){if(document.getElementById("wall"))return;const d=document.createElement("div");d.className="card";d.id="wall";
-d.innerHTML='<div class="pun">That\u2019s today\u2019s free puns used up.</div><p class="frame" style="margin-top:8px">Unlock unlimited puns for a one-off \u00a32.99. No subscription.</p><div class="row"><a class="appbtn" href="'+PAY+'">Unlock unlimited \u00b7 \u00a32.99</a></div>';feed.appendChild(d)}
+d.innerHTML='<div class="pun">That\u2019s today\u2019s free puns used up.</div><p class="frame" style="margin-top:8px">Endless puns on any word you type, no daily limit. \u00a32.99/month, cancel anytime.</p><div class="row"><a class="appbtn" href="'+PAY+'">Unlock unlimited \u00b7 \u00a32.99/month</a></div><p class="frame" style="margin-top:10px">Already subscribed? <a href="/app/" style="color:var(--accent)">Open unlimited</a> \u00b7 <a href="https://billing.stripe.com/p/login/00w5kF3QE9ZZdi97C50Ny00" style="color:var(--accent)">Manage subscription</a></p>';feed.appendChild(d)}
 function more(n=8){if(mode==="favs")return;for(let i=0;i<n;i++){if(!FULL&&used>=LIMIT){wall();break}feed.appendChild(card(next()));made++;if(!FULL)bump()}countEl.textContent=FULL?made+" puns served":Math.max(0,LIMIT-used)+" free puns left today"}
 function render(){
   feed.innerHTML="";made=0;
