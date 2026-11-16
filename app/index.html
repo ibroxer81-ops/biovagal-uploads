@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e2632a">
+<link rel="icon" href="icon-192.png">
+<title>Punsnup · Infinite Pun Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf4e9;--card:#fff;--ink:#2a2118;--muted:#8a7b6a;--accent:#e2632a;--line:#eadfce;--chip:#f3e8d8}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1713;--card:#26201a;--ink:#f3eadf;--muted:#a99884;--accent:#ff8a4c;--line:#3a3128;--chip:#332b23}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:16px 16px 10px;border-bottom:1px solid var(--line)}
+h1{font-family:Fraunces,Georgia,serif;font-size:26px;margin:0 0 2px;letter-spacing:-.5px}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);font-size:13px;margin:0 0 10px}
+.search{display:flex;gap:6px;margin-bottom:8px;position:relative}
+.search input{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:11px 34px 11px 12px;font:16px Inter,sans-serif;outline:none}
+.search input:focus{border-color:var(--accent)}
+.search button[type=submit]{border:0;background:var(--accent);color:#fff;border-radius:12px;padding:0 14px;font:700 14px Inter,sans-serif;cursor:pointer}
+#clr{position:absolute;right:84px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer;display:none}
+.hint{font-size:12px;color:var(--muted);margin:-2px 0 8px;min-height:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:0;background:var(--chip);color:var(--ink);padding:7px 12px;border-radius:999px;font:600 13px Inter,sans-serif;cursor:pointer}
+.tabs button.on{background:var(--accent);color:#fff}
+.count{margin-left:auto;align-self:center;color:var(--muted);font-size:12px}
+main{max-width:640px;margin:0 auto;padding:14px 14px 80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 12px;margin-bottom:12px;animation:pop .35s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.frame{color:var(--muted);font-size:13px;margin-bottom:6px}
+.pun{font-family:Fraunces,Georgia,serif;font-size:21px;line-height:1.35;font-weight:500}
+.pun b{color:var(--accent);font-weight:700}
+.row{display:flex;gap:4px;margin-top:10px;align-items:center}
+.row button{border:0;background:transparent;color:var(--muted);font:600 13px Inter,sans-serif;padding:6px 8px;border-radius:8px;cursor:pointer}
+.row button:active{background:var(--chip)}
+.row .fav.on{color:var(--accent)}
+.tag{margin-left:auto;font-size:11px;color:var(--muted);background:var(--chip);padding:3px 8px;border-radius:999px}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+#sentinel{height:40px}
+.fab{position:fixed;right:16px;bottom:18px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 20px;font:700 15px Inter,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.2);cursor:pointer}
+.appbtn{display:inline-block;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font:700 14px Inter,sans-serif}
+.banner{display:block;text-align:center;background:var(--ink);color:var(--bg);font:600 13px Inter,sans-serif;padding:8px;text-decoration:none}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <h1>PUNS<span>NUP</span></h1>
+  <p class="sub">The infinite pun generator. Reads the same both ways, groans the same every way.</p>
+  <form id="qf" class="search"><input id="q" type="text" placeholder="Type any word… cat, cheese, Billy, gym" autocomplete="off" enterkeyhint="go"><button type="button" id="clr" aria-label="Clear">×</button><button type="submit">Pun it</button></form>
+  <div class="hint" id="hint"></div>
+  <div class="tabs">
+    <button data-mode="all" class="on">All</button>
+    <button data-mode="remix">Remixes</button>
+    <button data-mode="classic">Classics</button>
+    <button data-mode="favs">♥ Saved</button>
+    <span class="count" id="count"></span>
+  </div>
+</header>
+<main id="feed"></main>
+<div id="sentinel"></div>
+<button class="fab" id="top">↑ Fresh puns</button>
+<div class="toast" id="toast"></div>
+
+<script>window.PUNSNUP_FULL=true;
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+// [original phrase, sound-alike, who'd say it]
+const PAIRS=[
+["time","thyme","a herb garden"],["let us","lettuce","a salad"],["peace","peas","a pea pod"],
+["well","whale","a whale"],["dear","deer","a deer"],["bare","bear","a bear"],["all","owl","an owl"],
+["god","cod","a cod"],["soul","sole","a sole"],["need","knead","a baker"],["role","roll","a bread roll"],
+["least","yeast","a baker"],["be","brie","a wheel of brie"],["be","bee","a bee"],["great","grate","a cheese grater"],
+["better","feta","a block of feta"],["better","batter","a pancake"],["good","gouda","a gouda"],["deal","dill","a pickle"],
+["meant","mint","a mint"],["very","berry","a strawberry"],["line","lime","a lime"],["lines","limes","a lime"],
+["remain","romaine","a lettuce"],["beat","beet","a beetroot"],["been","bean","a bean"],["joke","yolk","an egg"],
+["lot","latte","a barista"],["express","espresso","an espresso"],["walk","wok","a wok"],["none","naan","a naan"],
+["carry","curry","a curry"],["not your","nacho","a nacho"],["case","queso","a bowl of queso"],["penny","penne","a penne"],
+["piece of","pizza","a pizza"],["nothing","muffin","a muffin"],["gone","scone","a scone"],["cheaters","cheetahs","a cheetah"],
+["cause","claws","a cat"],["now","meow","a cat"],["little","litter","a kitten"],["for","fur","a cat"],
+["rough","ruff","a dog"],["pause","paws","a dog"],["move","moo-ve","a cow"],["other","udder","a cow"],
+["crack","quack","a duck"],["told","toad","a toad"],["hope","hop","a frog"],["shall","shell","a tortoise"],
+["calm","clam","a clam"],["muscle","mussel","a mussel"],["place","plaice","a plaice"],["make","hake","a hake"],
+["ought to","otter","an otter"],["problem","probllama","a llama"],["new","gnu","a gnu"],["must","moose","a moose"],
+["hair","hare","a hare"],["two can","toucan","a toucan"],["raving","raven","a raven"],["robbing","robin","a robin"],
+["turn","tern","a tern"],["regrets","egrets","an egret"],["seriously","cereal-sly","a bowl of cereal"],
+["believe","be-leaf","a tree"],["leave","leaf","a leaf"],["would","wood","a tree"],["fine","pine","a pine tree"],
+["whole","hole","a doughnut"],["see","sea","a fish"],["current","currant","a currant bun"],["pair","pear","a pear"],
+["I love","olive","an olive"],["do not","donut","a donut"],["coming","cumin","a spice rack"]
+];
+const SAYINGS=[
+"Time flies when you're having fun","Time is money","Only time will tell","Time heals all wounds",
+"Let us pray","Let us begin","Peace and quiet","Give peace a chance","Make peace, not war","Inner peace",
+"All's well that ends well","Well done","Oh well","Get well soon","Alive and well",
+"Oh dear","Hold on for dear life","Dear diary","The bare necessities","The bare minimum","Bare your soul",
+"All you need is love","All in good time","All hands on deck","All's fair in love and war","It's all good",
+"Oh my god","Thank god it's Friday","God only knows","Bless my soul","Heart and soul","The life and soul of the party",
+"A friend in need is a friend indeed","I feel the need for speed","Role model","Role reversal",
+"Last but not least","Least said, soonest mended","Let it be","To be or not to be","Be yourself",
+"Be there or be square","Be the change","Let bygones be bygones","Great minds think alike","Great expectations",
+"Better late than never","For better or worse","Better safe than sorry","Two heads are better than one",
+"Good things come to those who wait","Too good to be true","As good as gold","Good grief",
+"Big deal","It's a deal","Seal the deal","No big deal","It was meant to be","Meant for each other",
+"Thank you very much","The very best","Draw the line somewhere","The bottom line","Toe the line","Read between the lines",
+"Some things remain a mystery","Remain calm","If you can't beat them, join them","Beat around the bush","Beat it",
+"It's been a long time","Where have you been all my life","Been there, done that",
+"No joke","The joke's on you","Can't take a joke","Thanks a lot","A lot on my plate","Words can't express how I feel",
+"Walk this way","Walk the talk","A walk in the park","Second to none","None of your business",
+"Keep calm and carry on","Carry the can","Not your problem","In case of emergency","Case closed","Just in case",
+"In for a penny, in for a pound","A penny for your thoughts","The penny dropped","A piece of cake",
+"Nothing ventured, nothing gained","Nothing to see here","Much ado about nothing",
+"Here today, gone tomorrow","Gone with the wind","Gone but not forgotten","Cheaters never prosper",
+"For a good cause","Lost cause","Now or never","Here and now","Every little helps","A little goes a long way","Little by little",
+"Once and for all","For real","For crying out loud","Rough around the edges","A diamond in the rough","Pause for thought",
+"Get a move on","Make your move","On the other hand","The crack of dawn","Crack on","Have a crack at it",
+"I told you so","Truth be told","Do as you're told","Hope springs eternal","Hope for the best","Never lose hope",
+"We shall overcome","Ask and you shall receive","Seek and you shall find","The calm before the storm",
+"Put some muscle into it","Muscle memory","There's no place like home","Everything in its place",
+"In the right place at the right time","Make hay while the sun shines","Fake it till you make it","Make it count",
+"You ought to know better","You ought to see the other guy","No problem","Houston, we have a problem",
+"What's new?","Out with the old, in with the new","Turn over a new leaf","The show must go on",
+"All good things must come to an end","Let your hair down","Bad hair day","Two can play at that game",
+"Stark raving mad","Robbing Peter to pay Paul","One good turn deserves another","Turn the tables","No regrets",
+"Seriously though","Take it seriously","Believe in yourself","I can't believe it","Make believe",
+"Leave me alone","Take it or leave it","Leave no stone unturned","I would if I could","Would you believe it",
+"Fine and dandy","I'm fine","Read the fine print","The whole truth","The whole nine yards","On the whole",
+"Wait and see","See you later","See you on the other side","Current affairs","Go against the current",
+"A safe pair of hands","I love it when a plan comes together","Do not disturb","Do not pass go","Do not give up",
+"Winter is coming","Coming up roses","Coming soon"
+];
+const FRAMES=[
+t=>`What ${t} whispers before bed:`,t=>`${cap(t)}'s life motto:`,t=>`Embroidered on ${t}'s cushion:`,
+t=>`${cap(t)}'s dating profile:`,t=>`${cap(t)}, giving a TED talk:`,t=>`Tattooed on ${t}:`,
+t=>`${cap(t)}'s email sign-off:`,t=>`Overheard from ${t}:`,t=>`${cap(t)}'s motivational poster:`,
+t=>`Graffiti spotted near ${t}:`,t=>`${cap(t)}'s wedding speech, opening line:`,t=>`${cap(t)}'s out-of-office reply:`
+];
+const CLASSICS=[
+"I used to be a baker, but I couldn't make enough dough.","I'm reading a book on anti-gravity. It's impossible to put down.",
+"The scarecrow won an award because he was outstanding in his field.","I'd tell you a chemistry joke, but I know I wouldn't get a reaction.",
+"Time flies like an arrow. Fruit flies like a banana.","I used to hate facial hair, but then it grew on me.",
+"The claustrophobic astronaut just needed a little space.","I'm on a seafood diet. I see food and I eat it.",
+"A boiled egg every morning is hard to beat.","The maths book looked sad. It had too many problems.",
+"I don't trust stairs. They're always up to something.","What do you call a fake noodle? An impasta.",
+"Why don't skeletons fight each other? They don't have the guts.","I got a job at a calendar factory but got sacked for taking a couple of days off.",
+"Never trust an atom. They make up everything.","A bicycle can't stand on its own because it's two-tyred.",
+"The shovel was a ground-breaking invention.","I used to be addicted to soap, but I'm clean now.",
+"What's orange and sounds like a parrot? A carrot.","Why did the golfer bring two pairs of trousers? In case he got a hole in one.",
+"The bakery burned down. Now the business is toast.","Why did the biscuit go to the doctor? It was feeling crummy.",
+"What do you call a sleeping bull? A bulldozer.","What do you call a bear with no teeth? A gummy bear.",
+"What do you call a fish with no eyes? A fsh.","The cheese factory exploded. All that was left was de-brie.",
+"Velcro: what a rip-off.","I keep telling people about the benefits of dried grapes. It's all about raisin awareness.",
+"Why did the coffee file a police report? It got mugged.","I'm terrified of lifts, so I'm taking steps to avoid them.",
+"What do you call cheese that isn't yours? Nacho cheese.","Why did the tomato blush? It saw the salad dressing.",
+"The rotation of the earth really makes my day.","I tried to catch fog yesterday. Mist.",
+"The inventor of the knock-knock joke won the no-bell prize.","What do you call a dinosaur with a huge vocabulary? A thesaurus.",
+"I can't stand Russian dolls. They're so full of themselves.","Why are frogs so happy? They eat whatever bugs them.",
+"What do you call a pile of cats? A meowtain.","How does a penguin build its house? Igloos it together.",
+"How do you organise a space party? You planet.","What did the ocean say to the beach? Nothing, it just waved.",
+"Why do cows wear bells? Because their horns don't work.","What did the grape say when it got stepped on? Nothing, it just let out a little wine.",
+"I used to work in a shoe recycling shop. It was sole destroying.","I got hit by a can of fizzy juice. Luckily it was a soft drink.",
+"What do you call a deer with no eyes? No idea.","I asked the librarian for books on paranoia. She whispered, \"They're right behind you.\"",
+"Singing in the shower is fun until you get soap in your mouth. Then it's a soap opera.","What do sprinters eat before a race? Nothing, they fast.",
+"What's a skeleton's least favourite room? The living room.","I'm reading a horror story in braille. Something bad is about to happen. I can feel it.",
+"Two windmills chat about music. One says, \"I'm a big metal fan.\"","Why was the broom late? It over-swept.",
+"Why does the mushroom get invited to every party? He's a fungi.","What do you call a magic dog? A labracadabrador.",
+"Why did the crow sit on the phone line? To make a long-distance caw.","What do you call a belt made of watches? A waist of time.",
+"I'm great at sleeping. I can do it with my eyes closed.","What do you call an alligator in a vest? An investigator.",
+"What do lawyers wear to court? Lawsuits.","I wondered why the ball kept getting bigger. Then it hit me.",
+"Did you hear about the kidnapping at the school? It's fine, he woke up.","I'm a big fan of whiteboards. They're re-markable.",
+"The duck paid with a bill and asked them to put it on his tab.","What do you call a factory that makes okay products? A satisfactory.",
+"Pencils with erasers on both ends are pointless.","What do you call a lazy kangaroo? A pouch potato.",
+"Why did the cow cross the road? To get to the udder side.","What did the buffalo say when his son left? Bison.",
+"Why can't a nose be twelve inches long? Then it'd be a foot.","What do you call a parade of rabbits hopping backwards? A receding hare-line.",
+"My fear of moving stairs is escalating.","A cross-eyed teacher couldn't control his pupils."
+];
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function rx(o){return new RegExp("\\b"+o.replace(/ /g,"\\s+")+"\\b","gi")}
+const POOL=PAIRS.map(p=>({p,s:SAYINGS.filter(s=>rx(p[0]).test(s))})).filter(x=>x.s.length);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function remix(){
+  const {p,s}=pick(POOL), saying=pick(s);
+  const html=esc(saying).replace(rx(p[0]),m=>"<b>"+(m[0]===m[0].toUpperCase()&&m[0]!==m[0].toLowerCase()?cap(p[1]):p[1])+"</b>");
+  const frame=pick(FRAMES)(p[2]);
+  return {id:frame+"|"+html,frame,html:"“"+html+"”",kind:"Remix"};
+}
+function classic(){const c=pick(CLASSICS);return {id:c,frame:"",html:esc(c),kind:"Classic"}}
+const GROUPS={
+animal:"whale deer bear owl cod sole cheetahs claws meow litter fur ruff paws moo-ve udder quack toad hop shell clam mussel plaice hake otter probllama gnu moose hare toucan raven robin tern egrets",
+food:"thyme lettuce peas knead roll yeast brie grate feta batter gouda dill mint berry lime limes romaine beet bean yolk latte espresso wok naan curry nacho queso penne pizza muffin scone cereal-sly currant pear olive donut cumin",
+cheese:"brie grate feta gouda queso nacho",fish:"whale cod sole clam mussel plaice hake",sea:"whale cod sole clam mussel plaice hake shell sea",
+bird:"owl quack toucan raven robin tern egrets",cat:"claws meow litter fur",dog:"ruff paws",cow:"moo-ve udder",farm:"moo-ve udder quack",
+bread:"knead roll yeast scone muffin donut",bake:"knead roll yeast batter scone muffin donut",coffee:"latte espresso",
+fruit:"berry lime limes pear olive currant",veg:"lettuce peas beet bean romaine",tree:"be-leaf leaf wood pine",plant:"thyme mint be-leaf leaf wood pine",
+herb:"thyme mint dill cumin",spice:"cumin curry thyme",mexican:"nacho queso",italian:"penne pizza",indian:"naan curry cumin",
+insect:"bee",frog:"hop toad",cereal:"cereal-sly",egg:"yolk",pancake:"batter",pickle:"dill"};
+const STOP=new Set("the and you your for not but all are was with that this have has its it's from what when where who will can how our out one two too into onto them they then than".split(" "));
+function lev(a,b){const m=[];for(let i=0;i<=a.length;i++){m[i]=[i];for(let j=1;j<=b.length;j++)m[i][j]=i?Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1)):j}return m[a.length][b.length]}
+let query="",qPairs=[],qFuzzy=[],qClassics=[];
+function setQuery(raw){
+  query=raw.trim();const q=query.toLowerCase().replace(/s$/,"");
+  qPairs=[];qFuzzy=[];qClassics=[];if(!q)return;
+  const grp=Object.keys(GROUPS).filter(k=>k.startsWith(q)||q.startsWith(k)).flatMap(k=>GROUPS[k].split(" "));
+  qPairs=POOL.filter(({p})=>grp.includes(p[1])||p[1].toLowerCase().includes(q)||p[2].toLowerCase().includes(q)||(q.length>2&&p[0].toLowerCase()===q));
+  qClassics=CLASSICS.filter(c=>c.toLowerCase().includes(q));
+  // fuzzy: find words in sayings that sound a bit like the typed word
+  const w=q.replace(/[^a-z' -]/g,"");
+  if(w.length>=2) SAYINGS.forEach(s=>{
+    (s.match(/[A-Za-z']+/g)||[]).forEach(tok=>{
+      const t=tok.toLowerCase();if(t.length<3||STOP.has(t)||t===w)return;
+      const d=lev(t,w),lim=Math.max(1,Math.floor(Math.max(t.length,w.length)/3));
+      const rhyme=t.length>3&&w.length>3&&t.slice(-3)===w.slice(-3);
+      if(d<=lim+(w.length<=4?1:0)&&t[0]===w[0]||d<=lim||rhyme||(t.length>=4&&w.startsWith(t.slice(0,3))&&Math.abs(t.length-w.length)<=2))qFuzzy.push([s,tok]);
+    });
+  });
+  if(!qPairs.length&&!qFuzzy.length&&w.length>=3) SAYINGS.forEach(s=>(s.match(/[A-Za-z']+/g)||[]).forEach(tok=>{
+    const t=tok.toLowerCase();if(t.length>=3&&t!==w&&!STOP.has(t)&&t.slice(-2)===w.slice(-2))qFuzzy.push([s,tok]);
+  }));
+}
+function custom(){
+  const [s,tok]=pick(qFuzzy),word=query;
+  const html=esc(s).replace(new RegExp("\\b"+tok+"\\b"),m=>"<b>"+(/[A-Z]/.test(m[0])?cap(word):word)+"</b>");
+  const t=/^[A-Z]/.test(word)?word:"a "+word.toLowerCase();
+  const frame=pick(FRAMES)(t);
+  return {id:frame+"|"+html,frame,html:"“"+html+"”",kind:"Your word"};
+}
+function queryNext(){
+  const opts=[];
+  if(qPairs.length)opts.push(()=>{const x=pick(qPairs),saying=pick(x.s),p=x.p;
+    const html=esc(saying).replace(rx(p[0]),m=>"<b>"+(/[A-Z]/.test(m[0])?cap(p[1]):p[1])+"</b>");
+    const frame=pick(FRAMES)(p[2]);return {id:frame+"|"+html,frame,html:"“"+html+"”",kind:"Remix"}});
+  if(qFuzzy.length)opts.push(custom,custom);
+  if(qClassics.length)opts.push(()=>{const c=pick(qClassics);return {id:c,frame:"",html:esc(c),kind:"Classic"}});
+  let f=pick(opts),g=f();while(!g){f=pick(opts);g=f()}return g;
+}
+let mode="all",seen=new Set(),made=0;
+function next(){
+  for(let i=0;i<60;i++){
+    const g=query&&(qPairs.length||qFuzzy.length||qClassics.length)?queryNext():mode==="classic"?classic():mode==="remix"?remix():(Math.random()<.7?remix():classic());
+    if(!seen.has(g.id)){seen.add(g.id);return g}
+  }
+  seen.clear();return next();
+}
+let favs=[];try{favs=JSON.parse(localStorage.getItem("punFavs")||"[]")}catch(e){}
+function saveFavs(){try{localStorage.setItem("punFavs",JSON.stringify(favs))}catch(e){}}
+const feed=document.getElementById("feed"),countEl=document.getElementById("count");
+function card(g){
+  const d=document.createElement("div");d.className="card";
+  const on=favs.some(f=>f.id===g.id);
+  d.innerHTML=(g.frame?`<div class="frame">${esc(g.frame)}</div>`:"")+`<div class="pun">${g.html}</div>
+  <div class="row"><button class="fav ${on?"on":""}">${on?"♥ Saved":"♡ Save"}</button><button class="cp">Copy</button><span class="tag">${g.kind}</span></div>`;
+  d.querySelector(".fav").onclick=e=>{
+    const i=favs.findIndex(f=>f.id===g.id);
+    if(i>=0){favs.splice(i,1);e.target.classList.remove("on");e.target.textContent="♡ Save";if(mode==="favs")d.remove()}
+    else{favs.unshift(g);e.target.classList.add("on");e.target.textContent="♥ Saved";toast("Saved")}
+    saveFavs();
+  };
+  d.querySelector(".cp").onclick=()=>{
+    const t=d.innerText.split("\n").filter(l=>l&&!/Save|Copy|Remix|Classic/.test(l)).join(" ");
+    try{navigator.clipboard.writeText(t).then(()=>toast("Copied"),()=>toast("Copy blocked"))}catch(e){toast("Copy blocked")}
+  };
+  return d;
+}
+const FULL=!!window.PUNSNUP_FULL,LIMIT=25,today=new Date().toDateString();
+let used=0;try{const u=JSON.parse(localStorage.getItem("punUse")||"{}");used=u.d===today?u.n:0}catch(e){}
+function bump(){used++;try{localStorage.setItem("punUse",JSON.stringify({d:today,n:used}))}catch(e){}}
+function wall(){if(document.getElementById("wall"))return;const d=document.createElement("div");d.className="card";d.id="wall";
+d.innerHTML='<div class="pun">That\u2019s today\u2019s free puns used up.</div><p class="frame" style="margin-top:8px">Get unlimited puns, puns on any word you type, and no limits in the Punsnup app.</p><div class="row"><span class="appbtn">Coming soon to Google Play</span></div>';feed.appendChild(d)}
+function more(n=8){if(mode==="favs")return;for(let i=0;i<n;i++){if(!FULL&&used>=LIMIT){wall();break}feed.appendChild(card(next()));made++;if(!FULL)bump()}countEl.textContent=FULL?made+" puns served":Math.max(0,LIMIT-used)+" free puns left today"}
+function render(){
+  feed.innerHTML="";made=0;
+  if(mode==="favs"){countEl.textContent=favs.length+" saved";
+    if(!favs.length)feed.innerHTML='<div class="empty">Nothing saved yet. Tap ♡ on a pun you love (or love to hate).</div>';
+    favs.forEach(g=>feed.appendChild(card(g)));return}
+  more(10);
+}
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  mode=b.dataset.mode;window.scrollTo(0,0);render();
+});
+document.getElementById("top").onclick=()=>{if(mode==="favs")return;window.scrollTo({top:0});render()};
+new IntersectionObserver(e=>{if(e[0].isIntersecting)more()},{rootMargin:"600px"}).observe(document.getElementById("sentinel"));
+let tt;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),1200)}
+const qIn=document.getElementById("q"),clr=document.getElementById("clr"),hint=document.getElementById("hint");
+function runQuery(){
+  setQuery(qIn.value);clr.style.display=query?"block":"none";
+  const n=qPairs.length+qFuzzy.length+qClassics.length;
+  hint.textContent=!query?"":n?`Puns about “${query}”`:`Couldn't find a sound-alike for “${query}”, so here are random ones. Try a shorter or more common word.`;
+  if(mode==="favs"){document.querySelector('[data-mode=all]').click();return}
+  seen.clear();window.scrollTo(0,0);render();
+}
+document.getElementById("qf").onsubmit=e=>{e.preventDefault();qIn.blur();runQuery()};
+clr.onclick=()=>{qIn.value="";runQuery()};
+qIn.oninput=()=>{clr.style.display=qIn.value?"block":"none"};
+render();
+</script>
+</body>
+</html>
