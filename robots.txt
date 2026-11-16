@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /app/
+Disallow: /shorts/
+Disallow: /brand/
 Sitemap: https://punsnup.com/sitemap.xml
