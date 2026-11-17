@@ -186,13 +186,15 @@ function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;
 function rx(o){return new RegExp("\\b"+o.replace(/ /g,"\\s+")+"\\b","gi")}
 const POOL=PAIRS.map(p=>({p,s:SAYINGS.filter(s=>rx(p[0]).test(s))})).filter(x=>x.s.length);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
+const MEMP=[],MEMF=[],MEMC=[],MEMQ=[];
+function pickFresh(arr,keyf,mem,n){n=Math.min(n,Math.max(0,arr.length-1));let x;for(let i=0;i<25;i++){x=pick(arr);if(!mem.slice(mem.length-n).includes(keyf(x)))break}mem.push(keyf(x));if(mem.length>60)mem.shift();return x}
 function remix(){
-  const {p,s}=pick(POOL), saying=pick(s);
+  const {p,s}=pickFresh(POOL,x=>x.p[1],MEMP,14), saying=pick(s);
   const html=esc(saying).replace(rx(p[0]),m=>"<b>"+(m[0]===m[0].toUpperCase()&&m[0]!==m[0].toLowerCase()?cap(p[1]):p[1])+"</b>");
-  const frame=pick(FRAMES)(p[2]);
+  const frame=pickFresh(FRAMES,f=>FRAMES.indexOf(f),MEMF,5)(p[2]);
   return {id:frame+"|"+html,frame,html:"“"+html+"”",kind:"Remix"};
 }
-function classic(){const c=pick(CLASSICS);return {id:c,frame:"",html:esc(c),kind:"Classic"}}
+function classic(){const c=pickFresh(CLASSICS,c=>c,MEMC,25);return {id:c,frame:"",html:esc(c),kind:"Classic"}}
 const GROUPS={
 animal:"whale deer bear owl cod sole cheetahs claws meow litter fur ruff paws moo-ve udder quack toad hop shell clam mussel plaice hake otter probllama gnu moose hare toucan raven robin tern egrets",
 food:"thyme lettuce peas knead roll yeast brie grate feta batter gouda dill mint berry lime limes romaine beet bean yolk latte espresso wok naan curry nacho queso penne pizza muffin scone cereal-sly currant pear olive donut cumin",
@@ -226,7 +228,7 @@ function setQuery(raw){
   }));
 }
 function custom(){
-  const [s,tok]=pick(qFuzzy),word=query;
+  const [s,tok]=pickFresh(qFuzzy,x=>x[1].toLowerCase(),MEMQ,6),word=query;
   const html=esc(s).replace(new RegExp("\\b"+tok+"\\b"),m=>"<b>"+(/[A-Z]/.test(m[0])?cap(word):word)+"</b>");
   const t=/^[A-Z]/.test(word)?word:"a "+word.toLowerCase();
   const frame=pick(FRAMES)(t);
@@ -234,11 +236,11 @@ function custom(){
 }
 function queryNext(){
   const opts=[];
-  if(qPairs.length)opts.push(()=>{const x=pick(qPairs),saying=pick(x.s),p=x.p;
+  if(qPairs.length)opts.push(()=>{const x=pickFresh(qPairs,y=>y.p[1],MEMP,6),saying=pick(x.s),p=x.p;
     const html=esc(saying).replace(rx(p[0]),m=>"<b>"+(/[A-Z]/.test(m[0])?cap(p[1]):p[1])+"</b>");
     const frame=pick(FRAMES)(p[2]);return {id:frame+"|"+html,frame,html:"“"+html+"”",kind:"Remix"}});
   if(qFuzzy.length)opts.push(custom,custom);
-  if(qClassics.length)opts.push(()=>{const c=pick(qClassics);return {id:c,frame:"",html:esc(c),kind:"Classic"}});
+  if(qClassics.length)opts.push(()=>{const c=pickFresh(qClassics,c=>c,MEMC,6);return {id:c,frame:"",html:esc(c),kind:"Classic"}});
   let f=pick(opts),g=f();while(!g){f=pick(opts);g=f()}return g;
 }
 let mode="all",seen=new Set(),made=0;
