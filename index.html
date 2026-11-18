@@ -71,7 +71,8 @@ header{background:#e2632a!important;border-bottom:0!important}header .sub{color:
 <main id="feed"></main>
 <p style="text-align:center;font-size:13px;margin:0 0 90px"><a href="/puns/" style="color:var(--muted)">Browse puns by topic</a></p>
 <div id="sentinel"></div>
-<button class="fab" id="top">↑ Fresh puns</button>
+<button id="morebtn" style="display:block;margin:4px auto 90px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 26px;font:700 16px Inter,sans-serif;cursor:pointer">More puns ↓</button>
+<button class="fab" id="top" style="display:none">↑ Fresh puns</button>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -294,7 +295,9 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   mode=b.dataset.mode;window.scrollTo(0,0);render();
 });
 document.getElementById("top").onclick=()=>{if(mode==="favs")return;window.scrollTo({top:0});render()};
-new IntersectionObserver(e=>{if(e[0].isIntersecting)more()},{rootMargin:"600px"}).observe(document.getElementById("sentinel"));
+const moreBtn=document.getElementById("morebtn");moreBtn.onclick=()=>more(10);
+function syncUI(){moreBtn.style.display=(mode==="favs"||document.getElementById("wall"))?"none":"block";document.getElementById("top").style.display=window.scrollY>900?"block":"none"}
+window.addEventListener("scroll",syncUI,{passive:true});setInterval(syncUI,800);syncUI();
 let tt;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),1200)}
 const qIn=document.getElementById("q"),clr=document.getElementById("clr"),hint=document.getElementById("hint");
 function runQuery(){
