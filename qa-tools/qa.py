@@ -9,7 +9,7 @@ import re, os, sys, json, html, glob
 
 EXT = ('.html', '.htm', '.md', '.txt', '.json', '.js', '.webmanifest', '.xml')
 SKIP_DIRS = {'.git', 'node_modules', '__pycache__', 'out'}
-SKIP_FILES = {'uploads.json', 'drafts.json', 'plan.json', 'package-lock.json', 'qa.py'}
+SKIP_FILES = {'words.txt', 'whitelist.txt', 'README.md', 'uploads.json', 'drafts.json', 'plan.json', 'package-lock.json', 'qa.py'}
 
 # ---- safe auto-fixes -------------------------------------------------------
 MISSPELL = {
@@ -39,7 +39,7 @@ DOUBLE = re.compile(r'\b(the|a|an|and|to|of|in|is|it|for|on|with|your|you|this|t
 
 # ---- report-only rules -----------------------------------------------------
 BANNED = [(re.compile(r'greenock', re.I), 'Mentions Greenock (Billy wants no mention anywhere)')]
-HEALTH = re.compile(r'\b(cures?|cured|heals? (?:your|the|all)|treats? (?:anxiety|depression|insomnia|pain)|guaranteed|clinically proven|scientifically proven|proven to|will fix|reverses?)\b', re.I)
+HEALTH = re.compile(r'\b(cures?|cured|heals? (?:your|the|all)|treats? (?:anxiety|depression|insomnia|pain)|guaranteed|clinically proven|scientifically proven|proven to|will fix|reverses?|traditionally associated with|Intention:)', re.I)
 OLD_PRICE = re.compile(r'£\s?2\.99')
 STRIPE = re.compile(r'https://buy\.stripe\.com/[A-Za-z0-9_]+')
 LIVE_STRIPE = {'https://buy.stripe.com/5kQ7sNaf20ppdi9f4x0Ny02', 'https://buy.stripe.com/fZufZjbj61tt6TLbSl0Ny03'}
@@ -125,7 +125,7 @@ def scan_file(path, root, fix):
     text = visible_text(new, ext)
     for rx, msg in BANNED:
         for m in rx.finditer(new): issues.append(('banned', msg + f' (…{new[max(0,m.start()-30):m.end()+30].strip()}…)'))
-    if 'biovagal' in (root + rel).lower():
+    if 'biovagal' in (root + rel).lower() or 'biovagal' in new.lower():
         for m in HEALTH.finditer(text): issues.append(('claim', f'possible health/outcome claim: "{m.group(0)}"'))
     if 'punsnup' in new.lower() or 'site' in root:
         for m in OLD_PRICE.finditer(new): issues.append(('price', 'old price £2.99 (now £1.99/month, £7.99 lifetime)'))
