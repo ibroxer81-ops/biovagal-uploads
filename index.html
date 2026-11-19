@@ -58,6 +58,7 @@ header{background:#e2632a!important;border-bottom:0!important}header .sub{color:
   <a class="plogo" href="/" aria-label="Punsnup home"><svg class="pinf" viewBox="0 0 130 66" aria-hidden="true"><path d="M16 33 C16 9 50 9 66 33 C82 57 116 57 116 33 C116 9 82 9 66 33 C50 57 16 57 16 33 Z" fill="none" stroke="#f6efe2" stroke-width="19" stroke-linejoin="round"/><path d="M16 33 C16 9 50 9 66 33 C82 57 116 57 116 33 C116 9 82 9 66 33 C50 57 16 57 16 33 Z" fill="none" stroke="#1f1a17" stroke-width="11" stroke-linejoin="round"/></svg><span class="pword"><span class="ps" style="transform:translateY(0.038em) rotate(-8deg)">P</span><span class="ps" style="transform:translateY(-0.054em) rotate(5deg)">U</span><span class="ps" style="transform:translateY(0.023em) rotate(-4deg)">N</span><span class="ps s" style="transform:translateY(-0.023em) rotate(0deg)">S</span><span class="ps" style="transform:translateY(0.023em) rotate(4deg)">N</span><span class="ps" style="transform:translateY(-0.054em) rotate(-5deg)">U</span><span class="ps" style="transform:translateY(0.038em) rotate(8deg)">P</span><span class="pe" aria-hidden="true">🤣</span></span><span class="pdaily">INFINITE DAILY PUNS</span></a>
   <p class="sub">The infinite pun generator. Reads the same both ways, groans the same every way.</p>
   <p style="text-align:center;margin:4px 0 10px"><a href="https://punsnup.myspreadshop.co.uk" style="display:inline-block;padding:6px 14px;border-radius:999px;background:#e2632a;color:#f6efe2;font-weight:800;text-decoration:none;font-size:14px">👕 Pun tees &amp; mugs &rarr;</a></p>
+  <p class="promo" data-until="2026-12-03T00:00:00Z" style="text-align:center;margin:-4px 0 10px;font:800 13px Inter,sans-serif;color:#1c1712"><span style="background:#ffd23f;padding:4px 10px;border-radius:999px;border:2px solid #1c1712">Grand opening: 25% off all merch until 2 Dec</span></p>
   <form id="qf" class="search"><input id="q" type="text" placeholder="Type any word… cat, cheese, Billy, gym" autocomplete="off" enterkeyhint="go"><button type="button" id="clr" aria-label="Clear">×</button><button type="submit">Pun it</button></form>
   <div class="hint" id="hint"></div>
   <div class="tabs">
@@ -313,5 +314,6 @@ qIn.oninput=()=>{clr.style.display=qIn.value?"block":"none"};
 if(PAID){const b=document.getElementById("banner");if(b)b.remove()}
 try{const q0=new URLSearchParams(location.search).get("q");if(q0){qIn.value=q0.slice(0,40);runQuery()}else render()}catch(e){render()}
 </script>
+<script>document.querySelectorAll(".promo[data-until]").forEach(function(e){if(Date.now()>Date.parse(e.dataset.until))e.remove()})</script>
 </body>
 </html>
