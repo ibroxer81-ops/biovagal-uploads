@@ -57,7 +57,7 @@ header{background:#e2632a!important;border-bottom:0!important}header .sub{color:
 <header>
   <a class="plogo" href="/" aria-label="Punsnup home"><svg class="pinf" viewBox="0 0 130 66" aria-hidden="true"><path d="M16 33 C16 9 50 9 66 33 C82 57 116 57 116 33 C116 9 82 9 66 33 C50 57 16 57 16 33 Z" fill="none" stroke="#f6efe2" stroke-width="19" stroke-linejoin="round"/><path d="M16 33 C16 9 50 9 66 33 C82 57 116 57 116 33 C116 9 82 9 66 33 C50 57 16 57 16 33 Z" fill="none" stroke="#1f1a17" stroke-width="11" stroke-linejoin="round"/></svg><span class="pword"><span class="ps" style="transform:translateY(0.038em) rotate(-8deg)">P</span><span class="ps" style="transform:translateY(-0.054em) rotate(5deg)">U</span><span class="ps" style="transform:translateY(0.023em) rotate(-4deg)">N</span><span class="ps s" style="transform:translateY(-0.023em) rotate(0deg)">S</span><span class="ps" style="transform:translateY(0.023em) rotate(4deg)">N</span><span class="ps" style="transform:translateY(-0.054em) rotate(-5deg)">U</span><span class="ps" style="transform:translateY(0.038em) rotate(8deg)">P</span><span class="pe" aria-hidden="true">🤣</span></span><span class="pdaily">INFINITE DAILY PUNS</span></a>
   <p class="sub">The infinite pun generator. Reads the same both ways, groans the same every way.</p>
-  <p style="text-align:center;margin:4px 0 10px"><a href="https://punsnup-shop.fourthwall.com" style="display:inline-block;padding:6px 14px;border-radius:999px;background:#e2632a;color:#f6efe2;font-weight:800;text-decoration:none;font-size:14px">👕 Pun tees &amp; mugs &rarr;</a></p>
+  <p style="text-align:center;margin:4px 0 10px"><a href="https://punsnup.myspreadshop.co.uk" style="display:inline-block;padding:6px 14px;border-radius:999px;background:#e2632a;color:#f6efe2;font-weight:800;text-decoration:none;font-size:14px">👕 Pun tees &amp; mugs &rarr;</a></p>
   <form id="qf" class="search"><input id="q" type="text" placeholder="Type any word… cat, cheese, Billy, gym" autocomplete="off" enterkeyhint="go"><button type="button" id="clr" aria-label="Clear">×</button><button type="submit">Pun it</button></form>
   <div class="hint" id="hint"></div>
   <div class="tabs">
@@ -67,7 +67,7 @@ header{background:#e2632a!important;border-bottom:0!important}header .sub{color:
     <button data-mode="favs">♥ Saved</button>
     <span class="count" id="count"></span>
   </div>
-<p class="legal" style="text-align:center;font-size:11px;color:inherit;opacity:.85;margin:6px 0 0">&copy; 2026 Punsnup. All rights reserved. &middot; <a href="https://punsnup-shop.fourthwall.com" style="color:inherit">Merch shop</a> &middot; <a href="/terms/" style="color:inherit">Terms</a> &middot; <a href="/privacy/" style="color:inherit">Privacy</a></p></header>
+<p class="legal" style="text-align:center;font-size:11px;color:inherit;opacity:.85;margin:6px 0 0">&copy; 2026 Punsnup. All rights reserved. &middot; <a href="https://punsnup.myspreadshop.co.uk" style="color:inherit">Merch shop</a> &middot; <a href="/terms/" style="color:inherit">Terms</a> &middot; <a href="/privacy/" style="color:inherit">Privacy</a></p></header>
 <main id="feed"></main>
 <p style="text-align:center;font-size:13px;margin:0 0 90px"><a href="/puns/" style="color:var(--muted)">Browse puns by topic</a></p>
 <div id="sentinel"></div>
@@ -275,13 +275,13 @@ function card(g){
   return d;
 }
 const PAY="https://buy.stripe.com/fZufZjbj61tt6TLbSl0Ny03",PAYM="https://buy.stripe.com/5kQ7sNaf20ppdi9f4x0Ny02";
-(function(){try{const q=new URLSearchParams(location.search).get("paid");if(q&&/^cs_/.test(q)){localStorage.setItem("punPaid",q);history.replaceState(null,"",location.pathname);setTimeout(()=>toast("Unlocked. Unlimited puns!"),300)}}catch(e){}})();
+(function(){try{const q=new URLSearchParams(location.search).get("paid");if(q&&/^cs_(live|test)_\w{20,}/.test(q)){localStorage.setItem("punPaid",q);history.replaceState(null,"",location.pathname);setTimeout(()=>toast("Unlocked. Unlimited puns!"),300)}}catch(e){}})();
 let PAID=false;try{PAID=!!localStorage.getItem("punPaid")}catch(e){}
 const FULL=!!window.PUNSNUP_FULL||PAID,LIMIT=25,today=new Date().toDateString();
 let used=0;try{const u=JSON.parse(localStorage.getItem("punUse")||"{}");used=u.d===today?u.n:0}catch(e){}
 function bump(){used++;try{localStorage.setItem("punUse",JSON.stringify({d:today,n:used}))}catch(e){}}
 function wall(){if(document.getElementById("wall"))return;const d=document.createElement("div");d.className="card";d.id="wall";
-d.innerHTML='<div class="pun">That\u2019s today\u2019s free puns used up.</div><p class="frame" style="margin-top:8px">Endless puns on any word you type, no daily limit.</p><div class="row" style="flex-wrap:wrap;gap:8px"><a class="appbtn" href="'+PAY+'">Lifetime \u00b7 \u00a37.99 once</a><a class="appbtn" href="'+PAYM+'" style="background:transparent;color:var(--ink);border:2px solid var(--ink)">\u00a31.99/month</a></div><p class="frame" style="margin-top:6px">Best value: lifetime costs about the same as 4 months.</p><p class="frame" style="margin-top:10px">Already subscribed? <a href="/app/" style="color:var(--accent)">Open unlimited</a> \u00b7 <a href="https://billing.stripe.com/p/login/00w5kF3QE9ZZdi97C50Ny00" style="color:var(--accent)">Manage subscription</a></p>';feed.appendChild(d)}
+d.innerHTML='<div class="pun">That\u2019s today\u2019s free puns used up.</div><p class="frame" style="margin-top:8px">Endless puns on any word you type, no daily limit.</p><div class="row" style="flex-wrap:wrap;gap:8px"><a class="appbtn" href="'+PAY+'">Lifetime \u00b7 \u00a37.99 once</a><a class="appbtn" href="'+PAYM+'" style="background:transparent;color:var(--ink);border:2px solid var(--ink)">\u00a31.99/month</a></div><p class="frame" style="margin-top:6px">Best value: lifetime costs about the same as 4 months.</p><p class="frame" style="margin-top:10px">Already paid on this device? <a href="/app/" style="color:var(--accent)">Open unlimited</a> \u00b7 <a href="https://billing.stripe.com/p/login/00w5kF3QE9ZZdi97C50Ny00" style="color:var(--accent)">Manage subscription</a></p>';feed.appendChild(d)}
 function more(n=8){if(mode==="favs")return;for(let i=0;i<n;i++){if(!FULL&&used>=LIMIT){wall();break}feed.appendChild(card(next()));made++;if(!FULL)bump()}countEl.textContent=FULL?made+" puns served":Math.max(0,LIMIT-used)+" free puns left today"}
 function render(){
   feed.innerHTML="";made=0;
