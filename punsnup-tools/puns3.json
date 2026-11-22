@@ -1,0 +1,100 @@
+[
+ {
+  "slug": "15-fox-sake",
+  "setup": "What does a fed-up fox say?",
+  "punch": "“Oh, for fox sake.”",
+  "bg": "#f6efe2",
+  "accent": "#e2632a"
+ },
+ {
+  "slug": "16-shiitake-happens",
+  "setup": "A mushroom's life motto:",
+  "punch": "“Shiitake happens.”",
+  "bg": "#1d2a3a",
+  "accent": "#f2b134"
+ },
+ {
+  "slug": "17-bass-hole",
+  "setup": "What do you call a rude fish?",
+  "punch": "A bass hole.",
+  "bg": "#2f7d79",
+  "accent": "#f6efe2"
+ },
+ {
+  "slug": "18-ship-faced",
+  "setup": "What do you call a sailor after a big night out?",
+  "punch": "Ship faced.",
+  "bg": "#f2b134",
+  "accent": "#1f1a17"
+ },
+ {
+  "slug": "19-sofa-king-comfy",
+  "setup": "How comfy is the new couch?",
+  "punch": "Sofa king comfy.",
+  "bg": "#1f1a17",
+  "accent": "#f2b134"
+ },
+ {
+  "slug": "20-mother-clucker",
+  "setup": "What does an angry hen shout?",
+  "punch": "“Mother clucker!”",
+  "bg": "#e2632a",
+  "accent": "#1f1a17"
+ },
+ {
+  "slug": "21-get-forked",
+  "setup": "A chef's favourite insult:",
+  "punch": "“Get forked.”",
+  "bg": "#f6efe2",
+  "accent": "#2f7d79"
+ },
+ {
+  "slug": "22-nacho-cheese",
+  "setup": "What do you call cheese that isn't yours?",
+  "punch": "Nacho cheese.",
+  "bg": "#f6efe2",
+  "accent": "#e2632a"
+ },
+ {
+  "slug": "23-emotional-baggage",
+  "setup": "I told my suitcase there'd be no holiday this year.",
+  "punch": "Now it's got emotional baggage.",
+  "bg": "#1d2a3a",
+  "accent": "#f2b134"
+ },
+ {
+  "slug": "24-outstanding",
+  "setup": "Why did the scarecrow win an award?",
+  "punch": "He was outstanding in his field.",
+  "bg": "#2f7d79",
+  "accent": "#f6efe2"
+ },
+ {
+  "slug": "25-gummy-bear",
+  "setup": "What do you call a bear with no teeth?",
+  "punch": "A gummy bear.",
+  "bg": "#f2b134",
+  "accent": "#1f1a17"
+ },
+ {
+  "slug": "26-seafood-diet",
+  "setup": "I'm on a seafood diet.",
+  "punch": "I see food and I eat it.",
+  "bg": "#1f1a17",
+  "accent": "#f2b134"
+ },
+ {
+  "slug": "27-crack-up",
+  "setup": "Why don't eggs tell jokes?",
+  "punch": "They'd crack each other up.",
+  "bg": "#e2632a",
+  "accent": "#1f1a17"
+ },
+ {
+  "slug": "28-bulldozer",
+  "setup": "What do you call a sleeping bull?",
+  "punch": "A bulldozer.",
+  "bg": "#f6efe2",
+  "accent": "#2f7d79"
+ }
+]
