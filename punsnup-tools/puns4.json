@@ -1,0 +1,9 @@
+[
+ {"slug": "29-mugged", "setup": "Why did the coffee call the police?", "punch": "It got mugged.", "bg": "#f6efe2", "accent": "#e2632a"},
+ {"slug": "30-dino-snore", "setup": "What do you call a sleeping dinosaur?", "punch": "A dino-snore.", "bg": "#1d2a3a", "accent": "#f2b134"},
+ {"slug": "31-days-numbered", "setup": "Why was the calendar so nervous?", "punch": "Its days were numbered.", "bg": "#2f7d79", "accent": "#f6efe2"},
+ {"slug": "32-two-tired", "setup": "Why can't a bicycle stand up on its own?", "punch": "It's two tired.", "bg": "#f2b134", "accent": "#1f1a17"},
+ {"slug": "33-hole-in-one", "setup": "Why did the golfer pack two pairs of trousers?", "punch": "In case he got a hole in one.", "bg": "#1f1a17", "accent": "#f2b134"},
+ {"slug": "34-overswept", "setup": "Why was the broom late for work?", "punch": "It overswept.", "bg": "#e2632a", "accent": "#1f1a17"},
+ {"slug": "35-abdominal-snowman", "setup": "What do you call a snowman with a six-pack?", "punch": "An abdominal snowman.", "bg": "#f6efe2", "accent": "#2f7d79"}
+]
